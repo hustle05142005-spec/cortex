@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "jsx": "preserve"
+  },
+  "include": [
+    "../scripts/**/*.ts",
+    "../demo-agent/**/*.ts",
+    "../sdk/**/*.ts"
+  ],
+  "exclude": ["../node_modules", "../app", "../tests"]
+}

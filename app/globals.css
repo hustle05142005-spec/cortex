@@ -1,61 +1,171 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0); /* deep neutral */
-  --border-strong: oklch(0.839 0.0187 78.23);
-  --border-low: oklch(0.927 0.0122 96.43);
-  --accent: oklch(0 0 0);
-  --muted: #3a3a3a; /* darker for better light-mode contrast */
-  --cream: oklch(0.9553 0.0029 84.56);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --radius: 0.625rem;
+  /* Lumina-inspired tokens — near-black canvas, zinc text scale, hairline borders. */
+  --background: #09090b;
+  --foreground: #fafafa;
+  --foreground-muted: #a1a1aa; /* zinc-400 */
+  --foreground-faint: #71717a; /* zinc-500 */
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --border-low: rgba(255, 255, 255, 0.06);
+  --card: rgba(255, 255, 255, 0.03);
+  --card-foreground: #fafafa;
+  --accent: #fafafa;
+  --radius: 1.5rem;
   --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-geist), var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --border-strong: oklch(1 0 0 / 0.12);
-    --border-low: oklch(1 0 0 / 0.08);
-    --accent: oklch(0.922 0 0);
-    --muted: oklch(0.75 0.01 260); /* brighten muted text in dark mode */
-    --cream: oklch(0.22 0.009 70.82);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-bg1: var(--background);
   --color-foreground: var(--foreground);
-  --color-cream: var(--cream);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-faint: var(--foreground-faint);
   --color-border: var(--border-strong);
   --color-border-strong: var(--border-strong);
   --color-border-low: var(--border-low);
-  --color-primary: var(--accent);
-  --color-muted: var(--muted);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--accent);
+  --color-muted: var(--foreground-muted);
+  --color-cream: var(--foreground-muted);
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --font-mono: var(--font-mono);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-transparent;
+  html,
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
+  }
+  ::selection {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+@layer components {
+  /* Lumina-style frosted glass tile. */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 30px 60px -15px rgba(0, 0, 0, 0.8),
+      inset 0 1px 1px rgba(255, 255, 255, 0.08),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+    border-radius: 1.5rem;
+  }
+  .glass-card-sm {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+  }
+  /* Diagonal sheen overlay for hero glass tiles. */
+  .glass-highlight {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    border-radius: inherit;
+    z-index: 1;
+    pointer-events: none;
   }
 
-  body {
-    @apply bg-bg1 text-foreground antialiased;
-    font-family: var(--font-sans);
-    color-scheme: light dark;
+  /* Pill button — primary ("Start today"). */
+  .btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: #e4e4e7;
+    background: rgba(9, 9, 11, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(63, 63, 70, 0.8);
+    box-shadow:
+      0 2.8px 2.2px rgba(0, 0, 0, 0.3),
+      0 6.7px 5.3px rgba(0, 0, 0, 0.35),
+      0 12.5px 10px rgba(0, 0, 0, 0.4);
+    transition:
+      transform 0.4s cubic-bezier(0.15, 0.83, 0.66, 1),
+      color 0.2s ease,
+      background 0.2s ease;
+  }
+  .btn-pill:hover {
+    transform: translateY(-2px);
+    color: #fafafa;
+  }
+  .btn-pill-lg {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+  /* Ghost variant — slim outline. */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    color: #d4d4d8;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(82, 82, 91, 0.5);
+    transition:
+      color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+  .btn-ghost:hover {
+    color: #fafafa;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* Tiny "label" pill — used for section eyebrows. */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--foreground-muted);
+  }
+  .eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--foreground-muted);
   }
 }

@@ -8,13 +8,13 @@
     "format:check": "prettier --check .",
     "lint": "eslint",
     "start": "next start",
-    "anchor:build": "anchor build && ts-node scripts/sync-idl.ts",
-    "sync:idl": "ts-node scripts/sync-idl.ts",
+    "anchor:build": "anchor build && ts-node --project scripts/tsconfig.json scripts/sync-idl.ts",
+    "sync:idl": "ts-node --project scripts/tsconfig.json scripts/sync-idl.ts",
     "anchor:test": "anchor test --skip-local-validator",
     "anchor:test:local": "anchor test",
     "anchor:deploy:devnet": "anchor deploy --provider.cluster devnet",
-    "demo:seed": "ts-node scripts/seed-devnet.ts",
-    "demo:agent": "ts-node demo-agent/src/index.ts"
+    "demo:seed": "ts-node --project scripts/tsconfig.json scripts/seed-devnet.ts",
+    "demo:agent": "ts-node --project scripts/tsconfig.json demo-agent/src/index.ts"
   },
   "description": "Cortex — Solana-native infrastructure for AI agents (programmable wallet + skill marketplace).",
   "keywords": [
