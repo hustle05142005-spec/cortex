@@ -25,11 +25,15 @@ import {
 } from "@solana/spl-token";
 import { AnchorProvider, Wallet, BN } from "@coral-xyz/anchor";
 import { CortexClient } from "../../sdk/src";
-import { loadConfig, loadOrCreateKeypair } from "../../scripts/lib/keys";
+import {
+  loadConfig,
+  loadOrCreateKeypair,
+  ensureFunded,
+} from "../../scripts/lib/keys";
 
-const PER_CALL = new BN(100_000); // 0.1
-const DAILY = new BN(1_000_000); // 1.0
-const TOP_UP_LAMPORTS = 500_000; // 0.5 devUSDC, raw amount
+const PER_CALL = new BN(300_000); // 0.30 devUSDC — covers the priciest demo skill
+const DAILY = new BN(2_000_000); // 2.00 devUSDC daily cap
+const TOP_UP_LAMPORTS = 1_000_000; // 1.00 devUSDC vault top-up target
 
 function solscanUrl(sig: string, cluster: string): string {
   if (cluster === "mainnet-beta") return `https://solscan.io/tx/${sig}`;
@@ -47,6 +51,10 @@ async function main() {
   console.log(`[agent] cluster      : ${cfg.cluster}`);
   console.log(`[agent] owner        : ${owner.publicKey.toBase58()}`);
   console.log(`[agent] agent signer : ${agent.publicKey.toBase58()}`);
+
+  // Both the owner and the agent signer need SOL for tx fees.
+  await ensureFunded(conn, owner.publicKey);
+  await ensureFunded(conn, agent.publicKey);
 
   // We sign owner txs with the owner key, agent txs with the agent key.
   const ownerProvider = new AnchorProvider(conn, new Wallet(owner), {

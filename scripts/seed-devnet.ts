@@ -92,7 +92,19 @@ async function main() {
     1 // dust so the ATA is initialised; revenue accrues from agent calls
   );
 
-  // 3. Register skills (idempotent).
+  // 3. Owner ATA + 100 devUSDC so the owner can later top up agent vaults.
+  const ownerAta = await getOrCreateAssociatedTokenAccount(
+    conn,
+    owner,
+    mint,
+    owner.publicKey
+  );
+  await mintTo(conn, owner, mint, ownerAta.address, owner, 100_000_000);
+  console.log(
+    `[seed] minted 100 devUSDC to owner ATA ${ownerAta.address.toBase58()}`
+  );
+
+  // 4. Register skills (idempotent).
   for (const skill of SKILLS) {
     const existing = await cortex.fetchSkill(skill.slug);
     if (existing) {

@@ -1,4 +1,4 @@
-import { Nav } from "../components/Nav";
+import { Nav, PageBackdrop } from "../components/Nav";
 import { SkillCard, SkillCardData } from "../components/SkillCard";
 import { createReadOnlyCortexClient } from "../lib/cortex";
 
@@ -35,33 +35,37 @@ export default async function MarketplacePage() {
   const skills = await fetchSkills();
 
   return (
-    <div className="min-h-screen bg-bg1 text-foreground">
+    <div className="relative min-h-screen text-white">
+      <PageBackdrop />
       <Nav active="marketplace" />
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <header className="mb-10 space-y-3">
-          <p className="text-sm uppercase tracking-[0.18em] text-muted">
-            Skill marketplace
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Paid skills for AI agents
+
+      <main className="mx-auto max-w-7xl px-6 pt-32 pb-24 md:px-12">
+        <header className="max-w-3xl space-y-6">
+          <p className="eyebrow">Skill marketplace</p>
+          <h1 className="font-display text-4xl leading-[1.1] font-medium tracking-tight text-white sm:text-5xl md:text-6xl">
+            Paid skills for
+            <br />
+            <span className="text-zinc-400">autonomous agents</span>
           </h1>
-          <p className="max-w-3xl text-base leading-relaxed text-muted">
+          <p className="max-w-2xl text-base leading-relaxed text-zinc-400 md:text-lg">
             Anyone can register a skill — a callable endpoint with a per-call
             price in devUSDC. Agents discover skills, settle each call on-chain,
-            and revenue accrues to the author&apos;s ATA. No API keys, no
-            monthly invoices.
+            and revenue accrues directly to the author&apos;s ATA. No API keys,
+            no monthly invoices.
           </p>
         </header>
 
-        {skills.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {skills.map((s) => (
-              <SkillCard key={s.publicKey} skill={s} />
-            ))}
-          </div>
-        )}
+        <section className="mt-16">
+          {skills.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {skills.map((s) => (
+                <SkillCard key={s.publicKey} skill={s} />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
@@ -69,15 +73,20 @@ export default async function MarketplacePage() {
 
 function EmptyState() {
   return (
-    <div className="rounded-2xl border border-dashed border-border-low bg-card p-10 text-center">
-      <p className="font-mono text-sm uppercase tracking-wide text-muted">
-        No skills yet
-      </p>
-      <p className="mt-2 max-w-md mx-auto text-sm text-muted">
-        Run <code className="font-mono">npm run demo:seed</code> to register the
-        demo skills, or pop a custom skill in via the SDK&apos;s{" "}
-        <code className="font-mono">registerSkill()</code> helper.
-      </p>
+    <div className="glass-card relative overflow-hidden p-10 text-center">
+      <div className="glass-highlight" />
+      <div className="relative z-10">
+        <p className="font-mono text-xs tracking-widest uppercase text-zinc-500">
+          No skills yet
+        </p>
+        <p className="mx-auto mt-3 max-w-md text-sm text-zinc-400">
+          Run{" "}
+          <code className="font-mono text-zinc-200">npm run demo:seed</code> to
+          register the demo skills, or call{" "}
+          <code className="font-mono text-zinc-200">registerSkill()</code> from
+          the SDK.
+        </p>
+      </div>
     </div>
   );
 }

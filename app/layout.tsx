@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/providers";
 
@@ -9,14 +9,22 @@ const inter = Inter({
   display: "swap",
 });
 
+const geist = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Solana dApp Starter",
-  description: "A minimal Next.js starter powered by @solana/react-hooks",
+  title: "Cortex — programmable wallets and a skill marketplace for AI agents",
+  description:
+    "Solana-native infrastructure for AI agents. PDA wallets with hard spending limits, on-chain skill registry, every call settles in a single SPL transfer.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
@@ -34,7 +42,7 @@ export default function RootLayout({
       <Providers>
         <body
           suppressHydrationWarning
-          className={`${inter.variable} ${geistMono.variable} antialiased`}
+          className={`${inter.variable} ${geist.variable} ${geistMono.variable} antialiased`}
         >
           {children}
         </body>
