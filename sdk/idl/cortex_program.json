@@ -1,0 +1,918 @@
+{
+  "address": "DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV",
+  "metadata": {
+    "name": "cortex_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Cortex — Solana-native infrastructure for AI agents (programmable wallet + skill marketplace)"
+  },
+  "instructions": [
+    {
+      "name": "create_agent_wallet",
+      "docs": [
+        "Create an AgentWallet PDA owned by `owner` and addressable by the",
+        "given `agent` pubkey. Also creates the wallet's ATA for `mint`."
+      ],
+      "discriminator": [
+        243,
+        173,
+        1,
+        184,
+        209,
+        14,
+        51,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "docs": [
+            "Human owner / payer."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "agent"
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "agent_wallet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "agent_wallet"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "per_call_limit",
+          "type": "u64"
+        },
+        {
+          "name": "daily_limit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "pay_for_call",
+      "docs": [
+        "Agent-signed payment for a single skill invocation. Settles",
+        "`skill.price_per_call` from the agent's vault to the author's ATA",
+        "and updates per-day accounting."
+      ],
+      "discriminator": [
+        96,
+        109,
+        107,
+        40,
+        242,
+        120,
+        106,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "docs": [
+            "The agent's signing key — typically held inside the agent",
+            "runtime, never the human's wallet."
+          ],
+          "signer": true
+        },
+        {
+          "name": "agent_wallet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_vault",
+          "writable": true
+        },
+        {
+          "name": "skill",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "skill.slug",
+                "account": "Skill"
+              }
+            ]
+          }
+        },
+        {
+          "name": "author_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "register_skill",
+      "docs": [
+        "Register a paid skill. PDA seeded by `slug` so slugs are unique",
+        "globally."
+      ],
+      "discriminator": [
+        166,
+        249,
+        255,
+        189,
+        192,
+        197,
+        102,
+        2
+      ],
+      "accounts": [
+        {
+          "name": "author",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "skill",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "slug"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "slug",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "manifest_uri",
+          "type": "string"
+        },
+        {
+          "name": "price_per_call",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_agent_limits",
+      "docs": [
+        "Owner-only: change the spending policy on an existing wallet."
+      ],
+      "discriminator": [
+        222,
+        214,
+        32,
+        3,
+        150,
+        59,
+        89,
+        45
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "agent_wallet"
+          ]
+        },
+        {
+          "name": "agent_wallet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent_wallet.agent",
+                "account": "AgentWallet"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "per_call_limit",
+          "type": "u64"
+        },
+        {
+          "name": "daily_limit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_skill",
+      "docs": [
+        "Author-only: change price or active flag."
+      ],
+      "discriminator": [
+        116,
+        142,
+        164,
+        86,
+        9,
+        27,
+        112,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "author",
+          "signer": true,
+          "relations": [
+            "skill"
+          ]
+        },
+        {
+          "name": "skill",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "skill.slug",
+                "account": "Skill"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_price",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "active",
+          "type": {
+            "option": "bool"
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "docs": [
+        "Owner-only: pull `amount` of the wallet's mint back to the",
+        "owner's ATA. Skipping deposit ix because that's just an SPL",
+        "transfer into the PDA's vault — no signature needed."
+      ],
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "agent_wallet"
+          ]
+        },
+        {
+          "name": "agent_wallet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent_wallet.agent",
+                "account": "AgentWallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_vault",
+          "writable": true
+        },
+        {
+          "name": "owner_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AgentWallet",
+      "discriminator": [
+        127,
+        35,
+        180,
+        143,
+        201,
+        1,
+        100,
+        50
+      ]
+    },
+    {
+      "name": "Skill",
+      "discriminator": [
+        53,
+        13,
+        242,
+        204,
+        77,
+        249,
+        1,
+        215
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AgentLimitsUpdated",
+      "discriminator": [
+        74,
+        63,
+        86,
+        154,
+        66,
+        206,
+        154,
+        113
+      ]
+    },
+    {
+      "name": "AgentWalletCreated",
+      "discriminator": [
+        3,
+        111,
+        163,
+        233,
+        246,
+        175,
+        232,
+        231
+      ]
+    },
+    {
+      "name": "SkillCalled",
+      "discriminator": [
+        87,
+        58,
+        159,
+        193,
+        164,
+        48,
+        10,
+        88
+      ]
+    },
+    {
+      "name": "SkillRegistered",
+      "discriminator": [
+        222,
+        131,
+        204,
+        34,
+        182,
+        68,
+        239,
+        64
+      ]
+    },
+    {
+      "name": "SkillUpdated",
+      "discriminator": [
+        168,
+        10,
+        44,
+        211,
+        219,
+        5,
+        98,
+        98
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidLimit",
+      "msg": "Per-call limit must be greater than zero."
+    },
+    {
+      "code": 6001,
+      "name": "DailyLimitBelowPerCall",
+      "msg": "Daily limit must be at least the per-call limit."
+    },
+    {
+      "code": 6002,
+      "name": "AmountIsZero",
+      "msg": "Amount must be greater than zero."
+    },
+    {
+      "code": 6003,
+      "name": "InvalidSlug",
+      "msg": "Slug is invalid (empty, too long, or contains forbidden bytes)."
+    },
+    {
+      "code": 6004,
+      "name": "FieldTooLong",
+      "msg": "Field exceeds the on-chain length limit."
+    },
+    {
+      "code": 6005,
+      "name": "InvalidPrice",
+      "msg": "Price must be greater than zero."
+    },
+    {
+      "code": 6006,
+      "name": "SkillInactive",
+      "msg": "Skill is currently disabled by its author."
+    },
+    {
+      "code": 6007,
+      "name": "MintMismatch",
+      "msg": "Token mint does not match between accounts."
+    },
+    {
+      "code": 6008,
+      "name": "PerCallLimitExceeded",
+      "msg": "Skill price exceeds this agent's per-call limit."
+    },
+    {
+      "code": 6009,
+      "name": "DailyLimitExceeded",
+      "msg": "Skill price would exceed this agent's daily limit."
+    },
+    {
+      "code": 6010,
+      "name": "Overflow",
+      "msg": "Numerical overflow."
+    },
+    {
+      "code": 6011,
+      "name": "Unauthorized",
+      "msg": "Caller is not authorised for this action."
+    }
+  ],
+  "types": [
+    {
+      "name": "AgentLimitsUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "per_call_limit",
+            "type": "u64"
+          },
+          {
+            "name": "daily_limit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentWallet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "per_call_limit",
+            "type": "u64"
+          },
+          {
+            "name": "daily_limit",
+            "type": "u64"
+          },
+          {
+            "name": "daily_spent",
+            "type": "u64"
+          },
+          {
+            "name": "day_start_ts",
+            "type": "i64"
+          },
+          {
+            "name": "total_calls",
+            "type": "u64"
+          },
+          {
+            "name": "total_spent",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentWalletCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "per_call_limit",
+            "type": "u64"
+          },
+          {
+            "name": "daily_limit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Skill",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "author",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "slug",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "manifest_uri",
+            "type": "string"
+          },
+          {
+            "name": "price_per_call",
+            "type": "u64"
+          },
+          {
+            "name": "total_calls",
+            "type": "u64"
+          },
+          {
+            "name": "total_revenue",
+            "type": "u64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SkillCalled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "skill",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "author",
+            "type": "pubkey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SkillRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "skill",
+            "type": "pubkey"
+          },
+          {
+            "name": "author",
+            "type": "pubkey"
+          },
+          {
+            "name": "slug",
+            "type": "string"
+          },
+          {
+            "name": "price_per_call",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SkillUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "skill",
+            "type": "pubkey"
+          },
+          {
+            "name": "price_per_call",
+            "type": "u64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    }
+  ]
+}

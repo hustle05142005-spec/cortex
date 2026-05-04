@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# rust / anchor
+/target
+**/*.rs.bk
+.anchor/
+test-ledger/
+.crates.toml
+
+# secrets — keypairs and personal config
+config/*.json
+!config/demo.json
+.deploy/
+
+# macOS
+.DS_Store
+
