@@ -1,156 +1,248 @@
-"use client";
-import { useWalletConnection } from "@solana/react-hooks";
+import Link from "next/link";
+import { Nav } from "./components/Nav";
+import {
+  CORTEX_CLUSTER,
+  CORTEX_PROGRAM_ID,
+  createReadOnlyCortexClient,
+  formatToken,
+  shortAddr,
+  solscanAddrUrl,
+} from "./lib/cortex";
 
-export default function Home() {
-  const { connectors, connect, disconnect, wallet, status } =
-    useWalletConnection();
+export const dynamic = "force-dynamic";
 
-  const address = wallet?.account.address.toString();
+export const metadata = {
+  title: "Cortex — Solana-native infrastructure for AI agents",
+  description:
+    "Programmable agent wallet + on-chain skill marketplace. Pay for any skill at the speed of an SPL transfer.",
+};
+
+type GlobalStats = {
+  totalSkills: number;
+  totalAgents: number;
+  totalCalls: bigint;
+  totalRevenue: bigint;
+};
+
+async function fetchStats(): Promise<GlobalStats> {
+  try {
+    const cortex = createReadOnlyCortexClient();
+    const [skills, agents] = await Promise.all([
+      cortex.listSkills(),
+      cortex.listAgentWallets(),
+    ]);
+
+    const totals = skills.reduce(
+      (acc, s) => {
+        acc.calls += BigInt(s.totalCalls.toString());
+        acc.revenue += BigInt(s.totalRevenue.toString());
+        return acc;
+      },
+      { calls: 0n, revenue: 0n }
+    );
+
+    return {
+      totalSkills: skills.length,
+      totalAgents: agents.length,
+      totalCalls: totals.calls,
+      totalRevenue: totals.revenue,
+    };
+  } catch (err) {
+    console.error("[home] stats fetch failed", err);
+    return {
+      totalSkills: 0,
+      totalAgents: 0,
+      totalCalls: 0n,
+      totalRevenue: 0n,
+    };
+  }
+}
+
+export default async function Home() {
+  const stats = await fetchStats();
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-bg1 text-foreground">
-      <main className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col gap-10 border-x border-border-low px-6 py-16">
-        <header className="space-y-3">
+    <div className="min-h-screen bg-bg1 text-foreground">
+      <Nav active="home" />
+      <main className="mx-auto max-w-5xl px-6 py-16">
+        <header className="space-y-4">
           <p className="text-sm uppercase tracking-[0.18em] text-muted">
-            Solana starter kit
+            Cortex // {CORTEX_CLUSTER}
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            Ship a Solana dapp fast
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
+            Programmable wallets and a skill marketplace for AI agents, settled
+            on Solana.
           </h1>
           <p className="max-w-3xl text-base leading-relaxed text-muted">
-            Drop in <code className="font-mono">@solana/react-hooks</code>, wrap
-            your tree once, and you get wallet connect/disconnect plus
-            ready-to-use hooks for balances and transactions—no manual RPC
-            wiring.
+            Cortex gives every AI agent a PDA-owned vault with hard per-call and
+            daily spending limits, and a global registry of paid skills. Authors
+            publish, agents discover, every call settles in a single SPL
+            transfer — sub-cent payments at Solana speed.
           </p>
-          <ul className="mt-4 space-y-2 text-sm text-foreground">
-            <li className="flex gap-2">
-              <span
-                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
-                aria-hidden
-              />
-              <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://solana.com/docs"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Solana docs
-                </a>{" "}
-                — core concepts, RPC, programs, and client patterns.
-              </div>
-            </li>
-            <li className="flex gap-2">
-              <span
-                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
-                aria-hidden
-              />
-              <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://www.anchor-lang.com/docs/introduction"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Anchor docs
-                </a>{" "}
-                — build and test programs with IDL, macros, and type-safe
-                clients.
-              </div>
-            </li>
-            <li className="flex gap-2">
-              <span
-                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
-                aria-hidden
-              />
-              <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://faucet.solana.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Solana faucet (devnet)
-                </a>{" "}
-                — grab free devnet SOL to try transfers and transactions.
-              </div>
-            </li>
-            <li className="flex gap-2">
-              <span
-                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
-                aria-hidden
-              />
-              <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://github.com/solana-foundation/framework-kit/tree/main/packages/react-hooks"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  @solana/react-hooks README
-                </a>{" "}
-                — how this starter wires the client, connectors, and hooks.
-              </div>
-            </li>
-          </ul>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              href="/marketplace"
+              className="rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-bg1 hover:opacity-90"
+            >
+              Browse skills →
+            </Link>
+            <Link
+              href="/agent"
+              className="rounded-full border border-border-low px-5 py-2 text-sm font-semibold hover:bg-card"
+            >
+              View agent wallet
+            </Link>
+            <Link
+              href={solscanAddrUrl(CORTEX_PROGRAM_ID)}
+              target="_blank"
+              className="rounded-full border border-border-low px-5 py-2 text-sm font-mono hover:bg-card"
+            >
+              program {shortAddr(CORTEX_PROGRAM_ID, 6)}
+            </Link>
+          </div>
         </header>
 
-        <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <p className="text-lg font-semibold">Wallet connection</p>
-              <p className="text-sm text-muted">
-                Pick any discovered connector and manage connect / disconnect in
-                one spot.
-              </p>
-            </div>
-            <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold uppercase tracking-wide text-foreground/80">
-              {status === "connected" ? "Connected" : "Not connected"}
-            </span>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            {connectors.map((connector) => (
-              <button
-                key={connector.id}
-                onClick={() => connect(connector.id)}
-                disabled={status === "connecting"}
-                className="group flex items-center justify-between rounded-xl border border-border-low bg-card px-4 py-3 text-left text-sm font-medium transition hover:-translate-y-0.5 hover:shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <span className="flex flex-col">
-                  <span className="text-base">{connector.name}</span>
-                  <span className="text-xs text-muted">
-                    {status === "connecting"
-                      ? "Connecting…"
-                      : status === "connected" &&
-                          wallet?.connector.id === connector.id
-                        ? "Active"
-                        : "Tap to connect"}
-                  </span>
-                </span>
-                <span
-                  aria-hidden
-                  className="h-2.5 w-2.5 rounded-full bg-border-low transition group-hover:bg-primary/80"
-                />
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 border-t border-border-low pt-4 text-sm">
-            <span className="rounded-lg border border-border-low bg-cream px-3 py-2 font-mono text-xs">
-              {address ?? "No wallet connected"}
-            </span>
-            <button
-              onClick={() => disconnect()}
-              disabled={status !== "connected"}
-              className="inline-flex items-center gap-2 rounded-lg border border-border-low bg-card px-3 py-2 font-medium transition hover:-translate-y-0.5 hover:shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Disconnect
-            </button>
-          </div>
+        <section className="mt-16 grid gap-4 md:grid-cols-4">
+          <Stat
+            label="Skills registered"
+            value={stats.totalSkills.toString()}
+          />
+          <Stat label="Agent wallets" value={stats.totalAgents.toString()} />
+          <Stat
+            label="Calls settled"
+            value={stats.totalCalls.toString()}
+            unit="lifetime"
+          />
+          <Stat
+            label="Volume"
+            value={formatToken(stats.totalRevenue)}
+            unit="devUSDC"
+          />
         </section>
+
+        <section className="mt-20 grid gap-6 md:grid-cols-3">
+          <Tile
+            num="01"
+            title="Skill author"
+            body="Register a slug, set price-per-call in USDC, publish the manifest URL. Earn revenue every time an agent calls your endpoint, no monthly invoice."
+            cta={{ href: "/marketplace", label: "See registry" }}
+          />
+          <Tile
+            num="02"
+            title="Agent owner"
+            body="Spin up an AgentWallet PDA, set hard per-call and daily limits, deposit USDC. Hand the agent a separate signer key — your owner key keeps the override and withdraw."
+            cta={{ href: "/agent", label: "Live wallet" }}
+          />
+          <Tile
+            num="03"
+            title="Agent runtime"
+            body="One pay_for_call instruction = one SPL transfer to the author. Limits are enforced on-chain so a runaway loop can lose at most a day's budget."
+            cta={{
+              href: "https://github.com/hustle05142005-spec/cortex",
+              label: "SDK + demo",
+            }}
+          />
+        </section>
+
+        <section className="mt-20 rounded-3xl border border-border-low bg-card p-8 md:p-12">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted">
+            How a call settles
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+            One Solana transaction, three guarantees.
+          </h2>
+          <ol className="mt-6 grid gap-4 md:grid-cols-3">
+            {[
+              {
+                step: "1",
+                head: "Agent signs",
+                body: "The agent runtime signs pay_for_call with its own keypair. Your owner key never has to be online.",
+              },
+              {
+                step: "2",
+                head: "Program enforces",
+                body: "On-chain checks: skill is active, mint matches, price ≤ per-call limit, daily spent + price ≤ daily limit.",
+              },
+              {
+                step: "3",
+                head: "USDC settles",
+                body: "PDA-signed CPI transfers price_per_call from the agent vault straight to the author&apos;s ATA. Counters update.",
+              },
+            ].map((s) => (
+              <li
+                key={s.step}
+                className="rounded-2xl border border-border-low bg-bg1 p-5"
+              >
+                <p className="font-mono text-xs text-muted">step {s.step}</p>
+                <p className="mt-1 text-base font-semibold">{s.head}</p>
+                <p
+                  className="mt-2 text-sm text-muted"
+                  dangerouslySetInnerHTML={{ __html: s.body }}
+                />
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <footer className="mt-16 border-t border-border-low pt-6 text-xs text-muted">
+          Built for Solana Summit Kazakhstan · YC RFS Summer 2026 (AI-Native
+          Service Companies + Company Brain). Source on{" "}
+          <Link
+            href="https://github.com/hustle05142005-spec/cortex"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            GitHub
+          </Link>
+          .
+        </footer>
       </main>
     </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  unit,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-border-low bg-card p-5">
+      <p className="text-xs uppercase tracking-wider text-muted">{label}</p>
+      <p className="mt-2 font-mono text-3xl font-semibold">{value}</p>
+      {unit ? <p className="mt-1 text-xs text-muted">{unit}</p> : null}
+    </div>
+  );
+}
+
+function Tile({
+  num,
+  title,
+  body,
+  cta,
+}: {
+  num: string;
+  title: string;
+  body: string;
+  cta: { href: string; label: string };
+}) {
+  return (
+    <article className="flex h-full flex-col gap-3 rounded-2xl border border-border-low bg-card p-6">
+      <p className="font-mono text-xs text-muted">{num}</p>
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p
+        className="flex-1 text-sm text-muted"
+        dangerouslySetInnerHTML={{ __html: body }}
+      />
+      <Link
+        href={cta.href}
+        className="mt-2 self-start text-sm font-medium underline underline-offset-2 hover:text-foreground"
+      >
+        {cta.label} →
+      </Link>
+    </article>
   );
 }

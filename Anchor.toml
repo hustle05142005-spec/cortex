@@ -1,0 +1,22 @@
+[toolchain]
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+cortex_program = "DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV"
+
+[programs.devnet]
+cortex_program = "DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx ts-mocha -p ./tests/tsconfig.json -t 1000000 tests/**/*.test.ts"
