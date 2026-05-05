@@ -18,10 +18,11 @@ import {
   Keypair,
   Transaction,
   TransactionSignature,
+  VersionedTransaction,
   sendAndConfirmTransaction,
   type Commitment,
 } from "@solana/web3.js";
-import { AnchorProvider, Wallet, BN } from "@coral-xyz/anchor";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
   getOrCreateAssociatedTokenAccount,
   getAccount,
@@ -373,7 +374,36 @@ export class Cortex {
   // ---------------------------------------------------------------------
 
   private makeClient(signer: Keypair): CortexClient {
-    const provider = new AnchorProvider(this.connection, new Wallet(signer), {
+    // Hand-rolled wallet shape so this file works in both the Node SDK
+    // path and the Next.js browser bundle (Anchor's `Wallet` type is
+    // Node-only and not exported from its browser entrypoint).
+    const wallet = {
+      payer: signer,
+      publicKey: signer.publicKey,
+      async signTransaction<T extends Transaction | VersionedTransaction>(
+        tx: T
+      ): Promise<T> {
+        if ("version" in tx) {
+          (tx as VersionedTransaction).sign([signer]);
+        } else {
+          (tx as Transaction).partialSign(signer);
+        }
+        return tx;
+      },
+      async signAllTransactions<T extends Transaction | VersionedTransaction>(
+        txs: T[]
+      ): Promise<T[]> {
+        for (const tx of txs) {
+          if ("version" in tx) {
+            (tx as VersionedTransaction).sign([signer]);
+          } else {
+            (tx as Transaction).partialSign(signer);
+          }
+        }
+        return txs;
+      },
+    };
+    const provider = new AnchorProvider(this.connection, wallet, {
       commitment: "confirmed",
     });
     return new CortexClient(provider, { programId: this.programId });
