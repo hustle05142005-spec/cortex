@@ -56,3 +56,7 @@ config/*.json
 # macOS
 .DS_Store
 
+
+# Devin testing artefacts (not meant to be tracked)
+test-plan.md
+test-report.md

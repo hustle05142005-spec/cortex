@@ -77,9 +77,9 @@ export default async function Home() {
               <span className="text-zinc-400">for AI agents</span>
             </h1>
             <p className="mt-8 max-w-xl text-base leading-relaxed text-zinc-400 md:text-lg">
-              On-chain spending limits and a skill marketplace where every call
-              settles in one SPL transfer. Author publishes, agent discovers,
-              USDC moves — sub-cent payments at Solana speed.
+              An Anchor program enforces per-call and daily caps on the agent
+              vault. Authors register paid skills on-chain. Every call settles
+              in one SPL transfer at sub-cent fees.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">

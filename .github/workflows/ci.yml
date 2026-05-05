@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: lint + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_CORTEX_RPC_URL: https://api.devnet.solana.com
+          NEXT_PUBLIC_CORTEX_CLUSTER: devnet
+          NEXT_PUBLIC_CORTEX_PROGRAM_ID: DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV
+          NEXT_PUBLIC_DEMO_AGENT_PUBKEY: 2deDn2z1Mi6GUWPMe3248Ak36ubGPiqSmEcY9yBTdNVB
