@@ -15,7 +15,8 @@
     ".": "./src/index.ts",
     "./langchain": "./src/langchain.ts",
     "./ai-sdk": "./src/ai-sdk.ts",
-    "./gateway": "./src/gateway.ts"
+    "./gateway": "./src/gateway.ts",
+    "./mcp": "./src/mcp.ts"
   },
   "typesVersions": {
     "*": {
@@ -27,6 +28,9 @@
       ],
       "gateway": [
         "./src/gateway.ts"
+      ],
+      "mcp": [
+        "./src/mcp.ts"
       ]
     }
   },
@@ -53,7 +57,8 @@
     "@langchain/core": "^0.3.0",
     "ai": "^4.0.0",
     "zod": "^3.23.0",
-    "bn.js": "^5.2.1"
+    "bn.js": "^5.2.1",
+    "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "@langchain/core": {
@@ -63,6 +68,9 @@
       "optional": true
     },
     "zod": {
+      "optional": true
+    },
+    "@modelcontextprotocol/sdk": {
       "optional": true
     }
   },

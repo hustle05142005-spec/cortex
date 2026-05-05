@@ -114,17 +114,30 @@ async function smokeTestRun(cortex: Cortex, cluster: string): Promise<void> {
       `[agent] >> calling ${skill.slug} @ ${microUsdc(skill.pricePerCall)}`
     );
     try {
-      // The skill's manifestUri in our seed config is
-      // `https://example.com/...` (a placeholder) so we deliberately
-      // disable the HTTP fetch step here — the run is a payments
-      // smoke test, not a transport test.
+      // Most skills in our seed config have placeholder
+      // `https://example.com/...` manifest URIs, so we skip the HTTP
+      // step for those. For real endpoints (cortex-search-live →
+      // /api/skills/cortex-search), we trigger the full path so the
+      // gateway middleware verifies the on-chain proof end-to-end.
+      const isLive = !skill.manifestUri.startsWith("https://example.com/");
       const result = await cortex.payForCall(skill.slug, {
         input: `Demo run for ${skill.slug}`,
-        fetchEndpoint: false,
+        fetchEndpoint: isLive,
       });
       console.log(
         `[agent]    settled  ${solscanUrl(result.signature, cluster)}`
       );
+      if (isLive) {
+        if (result.endpointReached) {
+          console.log(
+            `[agent]    endpoint reached (HTTP ${result.endpointStatus ?? "?"}) — ${skill.manifestUri}`
+          );
+        } else {
+          console.log(
+            `[agent]    endpoint unreachable — ${skill.manifestUri} (settle still valid)`
+          );
+        }
+      }
       settled += 1;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

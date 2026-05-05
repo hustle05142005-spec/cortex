@@ -43,6 +43,15 @@ export function loadConfig(): DemoConfig {
   return JSON.parse(readFileSync(DEMO_CONFIG_PATH, "utf8")) as DemoConfig;
 }
 
+export function readConfig(): DemoConfig | null {
+  if (!existsSync(DEMO_CONFIG_PATH)) return null;
+  try {
+    return JSON.parse(readFileSync(DEMO_CONFIG_PATH, "utf8")) as DemoConfig;
+  } catch {
+    return null;
+  }
+}
+
 export function saveConfig(config: DemoConfig) {
   mkdirSync(CONFIG_DIR, { recursive: true });
   writeFileSync(DEMO_CONFIG_PATH, JSON.stringify(config, null, 2));

@@ -15,7 +15,12 @@ import {
 } from "@solana/spl-token";
 import { AnchorProvider, Wallet, BN } from "@coral-xyz/anchor";
 import { CortexClient } from "../sdk/src";
-import { loadOrCreateKeypair, saveConfig, ensureFunded } from "./lib/keys";
+import {
+  loadOrCreateKeypair,
+  readConfig,
+  saveConfig,
+  ensureFunded,
+} from "./lib/keys";
 
 const SKILLS = [
   {
@@ -89,6 +94,16 @@ const SKILLS = [
     manifestUri: "https://example.com/skills/tts.json",
     pricePerCall: 100_000, // 0.10 devUSDC
   },
+  {
+    slug: "cortex-search-live",
+    name: "Cortex Search (live)",
+    description:
+      "Live web search powered by Tavily. The first end-to-end Cortex skill — settles on-chain then calls a real HTTP endpoint with X-Cortex-Payment proof.",
+    manifestUri:
+      process.env.CORTEX_SEARCH_MANIFEST_URI ??
+      "https://cortex-cyan.vercel.app/api/skills/cortex-search",
+    pricePerCall: 50_000, // 0.05 devUSDC
+  },
 ];
 
 async function main() {
@@ -115,10 +130,20 @@ async function main() {
   const cortex = new CortexClient(provider);
 
   // 1. Create devUSDC mint (or load existing).
+  // If we've previously written `config/demo.json` with a mint, reuse it
+  // unconditionally so that subsequent seeds don't fork the mint and
+  // strand existing AgentWallet vaults (which constrain against the
+  // mint they were created with).
   let mint: PublicKey;
+  const previous = readConfig();
   if (process.env.CORTEX_MINT) {
     mint = new PublicKey(process.env.CORTEX_MINT);
-    console.log(`[seed] reusing mint ${mint.toBase58()}`);
+    console.log(`[seed] reusing mint ${mint.toBase58()} (from CORTEX_MINT)`);
+  } else if (previous?.mint) {
+    mint = new PublicKey(previous.mint);
+    console.log(
+      `[seed] reusing mint ${mint.toBase58()} (from config/demo.json)`
+    );
   } else {
     mint = await createMint(conn, owner, owner.publicKey, null, 6);
     console.log(`[seed] created mint ${mint.toBase58()}`);
