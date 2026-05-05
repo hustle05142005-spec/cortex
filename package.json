@@ -18,7 +18,8 @@
     "anchor:test:local": "anchor test",
     "anchor:deploy:devnet": "anchor deploy --provider.cluster devnet",
     "demo:seed": "ts-node --project scripts/tsconfig.json scripts/seed-devnet.ts",
-    "demo:agent": "ts-node --project scripts/tsconfig.json demo-agent/src/index.ts"
+    "demo:agent": "ts-node --project scripts/tsconfig.json demo-agent/src/index.ts",
+    "mcp:server": "ts-node --project scripts/tsconfig.json scripts/mcp-server.ts"
   },
   "description": "Cortex — Solana-native infrastructure for AI agents (programmable wallet + skill marketplace).",
   "keywords": [
@@ -67,5 +68,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5",
     "zod": "^3.25.76"
+  },
+  "optionalDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
   }
 }

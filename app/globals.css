@@ -148,6 +148,45 @@
     background: rgba(255, 255, 255, 0.04);
   }
 
+  /* Override wallet-adapter-react-ui to match our zinc/glass aesthetic. */
+  .wallet-adapter-button {
+    background: rgba(9, 9, 11, 0.8) !important;
+    color: #e4e4e7 !important;
+    border: 1px solid rgba(63, 63, 70, 0.8) !important;
+    border-radius: 9999px !important;
+    padding: 0.625rem 1.25rem !important;
+    height: auto !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    font-family: var(--font-sans) !important;
+    transition:
+      transform 0.4s cubic-bezier(0.15, 0.83, 0.66, 1),
+      color 0.2s ease;
+  }
+  .wallet-adapter-button:not([disabled]):hover {
+    background: rgba(9, 9, 11, 0.95) !important;
+    color: #fafafa !important;
+    transform: translateY(-2px);
+  }
+  .wallet-adapter-button-trigger {
+    background: rgba(9, 9, 11, 0.8) !important;
+  }
+  .wallet-adapter-modal-wrapper {
+    background: #18181b !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 1.5rem !important;
+  }
+  .wallet-adapter-modal-title {
+    color: #fafafa !important;
+    font-family: var(--font-display) !important;
+  }
+  .wallet-adapter-modal-list .wallet-adapter-button {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 1rem !important;
+    color: #d4d4d8 !important;
+  }
+
   /* Tiny "label" pill — used for section eyebrows. */
   .eyebrow {
     display: inline-flex;

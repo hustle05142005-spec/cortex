@@ -68,6 +68,12 @@
       "pda": "Dti3orM8y63n7UdfkNppEpapuCc3yZnEvGHPLUmvLAcU",
       "pricePerCall": 100000,
       "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "cortex-search-live",
+      "pda": "ApPsLxo3mHfYazV5rTJ2XvSPwnTGNfRZQeEAmWfCY2Bo",
+      "pricePerCall": 50000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
     }
   ]
 }
