@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     "bs58",
     "bn.js",
   ],
+  // cortex-sdk is consumed as a workspace package and ships TS sources
+  // (no precompiled dist). Transpile it through Next so server and
+  // edge runtimes can import it.
+  transpilePackages: ["cortex-sdk"],
 };
 
 export default nextConfig;

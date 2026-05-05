@@ -82,11 +82,13 @@ export default async function MarketplacePage() {
               Open-source agent skills, ready to claim
             </p>
             <p className="text-sm leading-relaxed text-zinc-400">
-              Maintainers add a <code className="font-mono text-zinc-200">cortex.toml</code> with
-              a Solana pubkey, run <code className="font-mono text-zinc-200">cortex publish</code>,
+              Maintainers add a{" "}
+              <code className="font-mono text-zinc-200">cortex.toml</code> with
+              a Solana pubkey, run{" "}
+              <code className="font-mono text-zinc-200">cortex publish</code>,
               and start earning per-call USDC. Until then, these cards are just
-              recruiting surfaces — Cortex never collects royalties on
-              unclaimed code.
+              recruiting surfaces — Cortex never collects royalties on unclaimed
+              code.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -109,9 +111,8 @@ function EmptyState() {
           No skills yet
         </p>
         <p className="mx-auto mt-3 max-w-md text-sm text-zinc-400">
-          Run{" "}
-          <code className="font-mono text-zinc-200">npm run demo:seed</code> to
-          register the demo skills, or call{" "}
+          Run <code className="font-mono text-zinc-200">npm run demo:seed</code>{" "}
+          to register the demo skills, or call{" "}
           <code className="font-mono text-zinc-200">registerSkill()</code> from
           the SDK.
         </p>
