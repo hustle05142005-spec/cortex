@@ -84,8 +84,7 @@ export const FEATURED_TEMPLATES: FeaturedTemplate[] = [
     category: "Text → Audio",
     repo: "elevenlabs/elevenlabs-python",
     stars: "1.5k",
-    blurb:
-      "Multilingual neural TTS. Charge per generated audio-second.",
+    blurb: "Multilingual neural TTS. Charge per generated audio-second.",
     suggestedPrice: 120_000,
   },
   {

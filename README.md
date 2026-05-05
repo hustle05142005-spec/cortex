@@ -31,11 +31,11 @@ Program ID: [`DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV`](https://solscan.io/
 
 Three account types:
 
-| Account       | Seeds                                | Purpose                                                         |
-| ------------- | ------------------------------------ | --------------------------------------------------------------- |
-| `AgentWallet` | `[b"agent", agent_pubkey]`           | Per-agent vault, owner, mint, per-call + daily spending limits  |
-| `Skill`       | `[b"skill", slug.as_bytes()]`        | Author, mint, price-per-call, manifest URI, lifetime stats      |
-| Vault         | ATA owned by `AgentWallet` PDA       | Holds the agent's USDC; PDA-signed CPI moves funds to the author|
+| Account       | Seeds                          | Purpose                                                          |
+| ------------- | ------------------------------ | ---------------------------------------------------------------- |
+| `AgentWallet` | `[b"agent", agent_pubkey]`     | Per-agent vault, owner, mint, per-call + daily spending limits   |
+| `Skill`       | `[b"skill", slug.as_bytes()]`  | Author, mint, price-per-call, manifest URI, lifetime stats       |
+| Vault         | ATA owned by `AgentWallet` PDA | Holds the agent's USDC; PDA-signed CPI moves funds to the author |
 
 Six instructions:
 
@@ -46,18 +46,36 @@ Six instructions:
 - `update_skill(price?, active?)`
 - `pay_for_call()` — signed by the agent runtime; checks limits, settles SPL transfer, emits `CallPaid`
 
-### TypeScript SDK — `sdk/`
+### TypeScript SDK — `cortex-sdk`
 
-Drop-in wrapper around the Anchor TS client. Exposes `CortexClient` with
-PDA helpers, account fetchers, and method builders for every instruction.
+Published as the workspace package `cortex-sdk` (see [`sdk/README.md`](./sdk/README.md)
+for the full API). High-level facade hides the Anchor plumbing:
 
 ```ts
-import { CortexClient } from "../sdk/src";
+import { Cortex } from "cortex-sdk";
 
-const cortex = new CortexClient(provider);
-await cortex.payForCall({ ... }).rpc();
-const skills = await cortex.listSkills();
+const cortex = new Cortex({ rpcUrl, agent, owner });
+await cortex.depositUsdc(5_000_000);                       // 5 USDC top-up
+const skills = await cortex.discoverSkills();              // 10 registered skills
+const result = await cortex.payForCall("demo-summarize", { input: "…" });
+console.log(result.signature, result.pricePaid.toString());
 ```
+
+Three subpath integrations ship out of the box:
+
+```ts
+import { cortexLangChainTools } from "cortex-sdk/langchain"; // LangChain Tools
+import { cortexAiTools }        from "cortex-sdk/ai-sdk";    // Vercel AI SDK Tools
+import { cortexPaymentMiddleware } from "cortex-sdk/gateway"; // skill-side gating
+```
+
+`cortex-sdk/langchain` and `cortex-sdk/ai-sdk` turn every registered skill
+into a tool the LLM can call. `cortex-sdk/gateway` plugs into Express /
+Next.js Route Handlers to verify `x-cortex-payment` proofs before
+serving content.
+
+Lower-level access is still available — `import { CortexClient } from "cortex-sdk"`
+for hand-built txs, account fetchers, and PDA helpers.
 
 ### Next.js dashboard — `app/`
 
@@ -71,14 +89,19 @@ All reads are server-rendered against devnet. No wallet required to browse.
 
 ### Demo agent — `demo-agent/`
 
-A Node.js script that:
+A workspace package (`cortex-demo-agent`) with two modes:
 
-1. Creates an `AgentWallet` PDA if missing.
-2. Tops up the vault from the owner's ATA.
-3. Calls each registered demo skill once (10 skills covering search,
-   summarisation, translation, RAG, on-chain audit, image generation, TTS,
-   weather, price feeds, and Colosseum research).
-4. Prints solscan links for every settlement and a final summary.
+1. **Smoke mode** (default): Bootstraps a wallet, tops up the vault, then
+   iterates through every registered skill and pays for each call once.
+   Halts cleanly if the on-chain spending policy fires (per-call /
+   daily-limit / insufficient-balance) — proves the wedge in one run.
+2. **LLM mode** (`ANTHROPIC_API_KEY=…`): Wires the same `Cortex` SDK
+   into a real LangChain agent backed by Claude Sonnet. Each tool call
+   the LLM picks results in an on-chain settle; intermediate steps are
+   printed with their settle signatures.
+
+Both modes print Solscan links for every settlement and a final
+lifetime / daily-spend summary.
 
 ---
 

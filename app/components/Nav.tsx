@@ -2,7 +2,12 @@ import Link from "next/link";
 
 type NavKey = "home" | "marketplace" | "agent" | "github";
 
-const items: { href: string; label: string; key: NavKey; external?: boolean }[] = [
+const items: {
+  href: string;
+  label: string;
+  key: NavKey;
+  external?: boolean;
+}[] = [
   { href: "/", label: "Overview", key: "home" },
   { href: "/marketplace", label: "Marketplace", key: "marketplace" },
   { href: "/agent", label: "Agent", key: "agent" },

@@ -1,0 +1,20 @@
+{
+  "name": "cortex-demo-agent",
+  "version": "0.2.0",
+  "private": true,
+  "description": "End-to-end agent that uses cortex-sdk + LangChain + Anthropic to call paid skills.",
+  "scripts": {
+    "start": "ts-node --project ../scripts/tsconfig.json src/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "@coral-xyz/anchor": "^0.31.1",
+    "@langchain/anthropic": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.95.5",
+    "cortex-sdk": "*",
+    "langchain": "^0.3.0",
+    "zod": "^3.23.0"
+  }
+}

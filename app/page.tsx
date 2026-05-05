@@ -70,18 +70,16 @@ export default async function Home() {
         {/* HERO */}
         <section className="grid gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-7">
-            <p className="eyebrow mb-6">
-              Cortex · {CORTEX_CLUSTER}
-            </p>
+            <p className="eyebrow mb-6">Cortex · {CORTEX_CLUSTER}</p>
             <h1 className="font-display text-5xl leading-[1.05] font-medium tracking-tight text-white/95 sm:text-6xl md:text-7xl">
               Programmable wallets
               <br />
               <span className="text-zinc-400">for AI agents</span>
             </h1>
             <p className="mt-8 max-w-xl text-base leading-relaxed text-zinc-400 md:text-lg">
-              On-chain spending limits and a skill marketplace where every
-              call settles in one SPL transfer. Author publishes, agent
-              discovers, USDC moves — sub-cent payments at Solana speed.
+              On-chain spending limits and a skill marketplace where every call
+              settles in one SPL transfer. Author publishes, agent discovers,
+              USDC moves — sub-cent payments at Solana speed.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -295,8 +293,12 @@ function HeroVaultMock({ stats }: { stats: GlobalStats }) {
           </ul>
 
           <div className="flex items-center justify-between pt-2 text-[11px] text-zinc-500">
-            <span className="font-mono">{stats.totalCalls.toString()} calls lifetime</span>
-            <span className="font-mono">{stats.totalSkills} skills available</span>
+            <span className="font-mono">
+              {stats.totalCalls.toString()} calls lifetime
+            </span>
+            <span className="font-mono">
+              {stats.totalSkills} skills available
+            </span>
           </div>
         </div>
       </article>

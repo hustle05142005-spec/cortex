@@ -31,7 +31,11 @@ export function TemplateCard({ template }: { template: FeaturedTemplate }) {
         </p>
 
         <dl className="grid grid-cols-3 gap-2 border-t border-white/5 pt-4 text-xs">
-          <Stat label="Suggested" value={formatToken(template.suggestedPrice)} unit="USDC" />
+          <Stat
+            label="Suggested"
+            value={formatToken(template.suggestedPrice)}
+            unit="USDC"
+          />
           <Stat label="GitHub" value={`★ ${template.stars}`} />
           <Stat label="Status" value="open" />
         </dl>
