@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { shortAddr, solscanAddrUrl, formatToken } from "../lib/cortex";
+import { shortAddr, formatToken } from "../lib/cortex";
 
 export type SkillCardData = {
   publicKey: string;
@@ -57,9 +57,9 @@ export function SkillCard({ skill }: { skill: SkillCardData }) {
 
         <footer className="mt-auto flex items-center justify-between text-xs text-zinc-500">
           <Link
-            href={solscanAddrUrl(skill.author)}
+            href={`/authors/${skill.author}`}
             className="font-mono transition-colors hover:text-zinc-200"
-            target="_blank"
+            title={`Author dashboard for ${skill.author}`}
           >
             ↳ {shortAddr(skill.author)}
           </Link>
