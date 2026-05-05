@@ -39,14 +39,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Providers>
-        <body
-          suppressHydrationWarning
-          className={`${inter.variable} ${geist.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </Providers>
+      <body
+        suppressHydrationWarning
+        className={`${inter.variable} ${geist.variable} ${geistMono.variable} antialiased`}
+      >
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
