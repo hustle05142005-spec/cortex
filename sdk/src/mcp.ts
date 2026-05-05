@@ -67,30 +67,42 @@ export async function buildCortexMcpServer(
 }> {
   const skills = await cortex.discoverSkills(opts);
 
-  const tools: CortexMcpTool[] = skills.map((skill) => ({
-    name: toolName(skill.slug),
-    slug: skill.slug,
-    description:
-      opts.describeTool?.({
-        slug: skill.slug,
-        name: skill.name,
-        description: skill.description,
-        pricePerCall: formatUsdc(skill.pricePerCall.toNumber()),
-      }) ??
-      `${skill.description} — paid Cortex skill, ${formatUsdc(
-        skill.pricePerCall.toNumber()
-      )} per call. Settles on-chain in USDC on Solana.`,
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        input: {
-          type: "string",
-          description: `Input to pass to the ${skill.name} skill. Plain string or JSON-encoded.`,
+  // Two distinct slugs can sanitise to the same MCP tool name (e.g.
+  // `my-tool` and `my_tool` both become `my_tool`). Append a short
+  // hash suffix on the second-and-later collision so every skill
+  // stays addressable from MCP without the on-chain slug having to
+  // change.
+  const seen = new Map<string, number>();
+  const tools: CortexMcpTool[] = skills.map((skill) => {
+    const base = toolName(skill.slug);
+    const collisionIdx = seen.get(base) ?? 0;
+    seen.set(base, collisionIdx + 1);
+    const name = collisionIdx === 0 ? base : `${base}_${slugSuffix(skill.slug)}`;
+    return {
+      name,
+      slug: skill.slug,
+      description:
+        opts.describeTool?.({
+          slug: skill.slug,
+          name: skill.name,
+          description: skill.description,
+          pricePerCall: formatUsdc(skill.pricePerCall.toNumber()),
+        }) ??
+        `${skill.description} — paid Cortex skill, ${formatUsdc(
+          skill.pricePerCall.toNumber()
+        )} per call. Settles on-chain in USDC on Solana.`,
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          input: {
+            type: "string",
+            description: `Input to pass to the ${skill.name} skill. Plain string or JSON-encoded.`,
+          },
         },
+        required: ["input"],
       },
-      required: ["input"],
-    },
-  }));
+    };
+  });
 
   // Lazy-load the MCP SDK so it stays an optional peer dep.
   const sdk = await import("@modelcontextprotocol/sdk/server/index.js");
@@ -224,6 +236,18 @@ type McpCallToolRequest = {
 
 function toolName(slug: string): string {
   return slug.replace(/[^a-zA-Z0-9_]/g, "_");
+}
+
+// Deterministic short suffix derived from the original slug. Used to
+// disambiguate distinct slugs that sanitise to the same `toolName`.
+// Same slug always produces the same suffix, so MCP clients can
+// stably address the right skill across server restarts.
+function slugSuffix(slug: string): string {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) {
+    h = (h * 31 + slug.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(36).slice(0, 6);
 }
 
 function formatUsdc(microUsdc: number): string {
