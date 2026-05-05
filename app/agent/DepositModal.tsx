@@ -9,7 +9,6 @@ import {
 } from "@solana/spl-token";
 import type { AnchorWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { BN } from "@coral-xyz/anchor";
 import { Modal, FormError, NumberInput } from "./Modal";
 import type { AgentWalletState } from "../../sdk/src/types";
 import { formatToken } from "../lib/cortex";
@@ -79,7 +78,9 @@ export function DepositModal({
           wallet.mint,
           vault,
           ownerPubkey,
-          new BN(lamports.toString()).toNumber(),
+          // Pass the bigint directly — going through `Number` would
+          // silently truncate amounts above ~9.007e15 micro-USDC.
+          lamports,
           DECIMALS
         )
       );

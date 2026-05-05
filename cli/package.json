@@ -1,0 +1,23 @@
+{
+  "name": "cortex-cli",
+  "version": "0.1.0",
+  "description": "Cortex CLI — publish, update, and verify skills on the Cortex Solana program.",
+  "private": true,
+  "bin": {
+    "cortex": "./bin/cortex.ts"
+  },
+  "scripts": {
+    "publish:dev": "ts-node --project ../scripts/tsconfig.json bin/cortex.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.95.5",
+    "cortex-sdk": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}

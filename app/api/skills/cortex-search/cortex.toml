@@ -1,0 +1,13 @@
+# Reference cortex.toml for the live `cortex-search-live` skill.
+#
+# Run `npx ts-node cli/bin/cortex.ts publish app/api/skills/cortex-search/cortex.toml`
+# from the repo root to (re-)register or update this skill on the
+# configured network. The CLI is idempotent — re-publishing only
+# updates fields that changed.
+slug         = "cortex-search-live"
+name         = "Cortex Search (live)"
+description  = "Tavily-backed AI web search. Verifies on-chain x402 settle before serving results."
+manifest_uri = "https://cortex.example.com/api/skills/cortex-search"
+price_usdc   = "0.05"
+author       = "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+network      = "devnet"

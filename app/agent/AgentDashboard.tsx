@@ -14,7 +14,7 @@
  *      but don't want to install a wallet). The demo agent pubkey
  *      comes from `NEXT_PUBLIC_DEMO_AGENT_PUBKEY`.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Keypair,
@@ -74,10 +74,21 @@ export function AgentDashboard() {
     "create" | "deposit" | "withdraw" | "limits" | null
   >(null);
 
+  // Cancel the previous timer when a new toast comes in so toast B
+  // doesn't get dismissed early because toast A's 6-second timer is
+  // still running.
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showToast = useCallback((kind: ToastKind, text: string) => {
     setToast({ kind, text });
-    window.setTimeout(() => setToast(null), 6_000);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 6_000);
   }, []);
+  useEffect(
+    () => () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    },
+    []
+  );
 
   const refresh = useCallback(() => setRefreshTick((t) => t + 1), []);
 
