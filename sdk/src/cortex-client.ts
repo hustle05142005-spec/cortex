@@ -198,6 +198,27 @@ export class CortexClient {
     });
   }
 
+  closeAgentWallet(
+    ownerPubkey: PublicKey,
+    agentWallet: PublicKey,
+    agentVault: PublicKey,
+    ownerTokenAccount: PublicKey
+  ) {
+    return this.program.methods.closeAgentWallet().accountsPartial({
+      owner: ownerPubkey,
+      agentWallet,
+      agentVault,
+      ownerTokenAccount,
+    });
+  }
+
+  closeSkill(authorPubkey: PublicKey, slug: string) {
+    const [skill] = this.skillPda(slug);
+    return this.program.methods
+      .closeSkill()
+      .accountsPartial({ author: authorPubkey, skill });
+  }
+
   registerSkill(params: RegisterSkillParams) {
     return this.program.methods
       .registerSkill(

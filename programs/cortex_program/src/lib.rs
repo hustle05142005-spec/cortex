@@ -18,7 +18,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{self, CloseAccount, Mint, Token, TokenAccount, Transfer};
 
 declare_id!("DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV");
 
@@ -117,6 +117,70 @@ pub mod cortex_program {
         );
         token::transfer(cpi_ctx, amount)?;
 
+        emit!(Withdrawn {
+            agent_wallet: ctx.accounts.agent_wallet.key(),
+            owner: ctx.accounts.owner.key(),
+            mint: ctx.accounts.agent_wallet.mint,
+            amount,
+        });
+
+        Ok(())
+    }
+
+    /// Owner-only: drain the vault, close the vault token account, and
+    /// close the AgentWallet PDA. Rent and any remaining tokens flow
+    /// back to the owner. Idempotent end-of-life for an agent.
+    pub fn close_agent_wallet(ctx: Context<CloseAgentWallet>) -> Result<()> {
+        let remaining = ctx.accounts.agent_vault.amount;
+        let agent_key = ctx.accounts.agent_wallet.agent;
+        let bump = ctx.accounts.agent_wallet.bump;
+        let signer_seeds: &[&[&[u8]]] =
+            &[&[b"agent", agent_key.as_ref(), &[bump]]];
+
+        // Drain whatever's left in the vault back to owner.
+        if remaining > 0 {
+            let cpi_accounts = Transfer {
+                from: ctx.accounts.agent_vault.to_account_info(),
+                to: ctx.accounts.owner_token_account.to_account_info(),
+                authority: ctx.accounts.agent_wallet.to_account_info(),
+            };
+            let cpi_ctx = CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                cpi_accounts,
+                signer_seeds,
+            );
+            token::transfer(cpi_ctx, remaining)?;
+        }
+
+        // Close the vault token account; lamports refunded to owner.
+        let cpi_close = CloseAccount {
+            account: ctx.accounts.agent_vault.to_account_info(),
+            destination: ctx.accounts.owner.to_account_info(),
+            authority: ctx.accounts.agent_wallet.to_account_info(),
+        };
+        let cpi_close_ctx = CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            cpi_close,
+            signer_seeds,
+        );
+        token::close_account(cpi_close_ctx)?;
+
+        emit!(AgentWalletClosed {
+            agent_wallet: ctx.accounts.agent_wallet.key(),
+            owner: ctx.accounts.owner.key(),
+            drained: remaining,
+        });
+
+        Ok(())
+    }
+
+    /// Author-only: close a skill PDA and refund rent.
+    pub fn close_skill(ctx: Context<CloseSkill>) -> Result<()> {
+        emit!(SkillClosed {
+            skill: ctx.accounts.skill.key(),
+            author: ctx.accounts.skill.author,
+            slug: ctx.accounts.skill.slug.clone(),
+        });
         Ok(())
     }
 
@@ -145,14 +209,14 @@ pub mod cortex_program {
         );
         require!(price_per_call > 0, CortexError::InvalidPrice);
 
-        // Slug should be lowercase ASCII / digits / dashes — keep
-        // policy permissive but ban whitespace and control chars.
+        // Slug must be lowercase ASCII letters / digits / `-` / `_`.
+        // Lowercasing is enforced (not auto-applied) so callers and
+        // off-chain indexers always agree on the canonical PDA seed.
         for b in slug.as_bytes() {
             let c = *b;
-            require!(
-                c >= 0x21 && c < 0x7f,
-                CortexError::InvalidSlug
-            );
+            let ok =
+                c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-' || c == b'_';
+            require!(ok, CortexError::InvalidSlug);
         }
 
         let skill = &mut ctx.accounts.skill;
@@ -375,6 +439,47 @@ pub struct RegisterSkill<'info> {
 }
 
 #[derive(Accounts)]
+pub struct CloseAgentWallet<'info> {
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    #[account(
+        mut,
+        close = owner,
+        has_one = owner @ CortexError::Unauthorized,
+        seeds = [b"agent", agent_wallet.agent.as_ref()],
+        bump = agent_wallet.bump,
+    )]
+    pub agent_wallet: Account<'info, AgentWallet>,
+    #[account(
+        mut,
+        constraint = agent_vault.mint == agent_wallet.mint @ CortexError::MintMismatch,
+        constraint = agent_vault.owner == agent_wallet.key() @ CortexError::Unauthorized,
+    )]
+    pub agent_vault: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        constraint = owner_token_account.mint == agent_wallet.mint @ CortexError::MintMismatch,
+        constraint = owner_token_account.owner == owner.key() @ CortexError::Unauthorized,
+    )]
+    pub owner_token_account: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct CloseSkill<'info> {
+    #[account(mut)]
+    pub author: Signer<'info>,
+    #[account(
+        mut,
+        close = author,
+        has_one = author @ CortexError::Unauthorized,
+        seeds = [b"skill", skill.slug.as_bytes()],
+        bump = skill.bump,
+    )]
+    pub skill: Account<'info, Skill>,
+}
+
+#[derive(Accounts)]
 pub struct UpdateSkill<'info> {
     pub author: Signer<'info>,
     #[account(
@@ -502,6 +607,28 @@ pub struct SkillCalled {
     pub author: Pubkey,
     pub price: u64,
     pub timestamp: i64,
+}
+
+#[event]
+pub struct Withdrawn {
+    pub agent_wallet: Pubkey,
+    pub owner: Pubkey,
+    pub mint: Pubkey,
+    pub amount: u64,
+}
+
+#[event]
+pub struct AgentWalletClosed {
+    pub agent_wallet: Pubkey,
+    pub owner: Pubkey,
+    pub drained: u64,
+}
+
+#[event]
+pub struct SkillClosed {
+    pub skill: Pubkey,
+    pub author: Pubkey,
+    pub slug: String,
 }
 
 // ---------------------------------------------------------------------------
