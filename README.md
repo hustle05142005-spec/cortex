@@ -55,8 +55,8 @@ for the full API). High-level facade hides the Anchor plumbing:
 import { Cortex } from "cortex-sdk";
 
 const cortex = new Cortex({ rpcUrl, agent, owner });
-await cortex.depositUsdc(5_000_000);                       // 5 USDC top-up
-const skills = await cortex.discoverSkills();              // 10 registered skills
+await cortex.depositUsdc(5_000_000); // 5 USDC top-up
+const skills = await cortex.discoverSkills(); // 10 registered skills
 const result = await cortex.payForCall("demo-summarize", { input: "…" });
 console.log(result.signature, result.pricePaid.toString());
 ```
@@ -65,7 +65,7 @@ Three subpath integrations ship out of the box:
 
 ```ts
 import { cortexLangChainTools } from "cortex-sdk/langchain"; // LangChain Tools
-import { cortexAiTools }        from "cortex-sdk/ai-sdk";    // Vercel AI SDK Tools
+import { cortexAiTools } from "cortex-sdk/ai-sdk"; // Vercel AI SDK Tools
 import { cortexPaymentMiddleware } from "cortex-sdk/gateway"; // skill-side gating
 ```
 
@@ -83,9 +83,20 @@ Three routes:
 
 - `/` — overview, lifetime stats, "how a call settles" explainer
 - `/marketplace` — every registered skill, live counters, links to author and manifest
-- `/agent` — live snapshot of an AgentWallet PDA: balance, limits, daily progress
+- `/agent` — **interactive wallet UI**:
+  - Connect Phantom or Solflare; the connected wallet becomes the **owner key**
+  - Auto-generates a fresh **agent signer keypair** (stored locally in the
+    browser, low-privilege — capped by on-chain limits even if leaked)
+  - "Create wallet" / "Deposit" / "Withdraw" / "Update limits" modals each
+    fire a real on-chain tx
+  - Live vault balance, daily-spent progress bar, last 10 transactions
+    on the PDA with Solscan links
+  - "Get 5 devUSDC" faucet button on devnet (server-side mint authority,
+    optional — see `CORTEX_FAUCET_AUTHORITY` env var below)
+  - Without a connected wallet: read-only snapshot of `NEXT_PUBLIC_DEMO_AGENT_PUBKEY`
+    so the page is still useful for visitors
 
-All reads are server-rendered against devnet. No wallet required to browse.
+All reads stream from devnet RPC.
 
 ### Demo agent — `demo-agent/`
 
