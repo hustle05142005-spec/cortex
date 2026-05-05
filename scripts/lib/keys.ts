@@ -51,12 +51,12 @@ export function saveConfig(config: DemoConfig) {
 export async function ensureFunded(
   conn: Connection,
   pubkey: PublicKey,
-  minLamports: number = LAMPORTS_PER_SOL
+  minLamports: number = LAMPORTS_PER_SOL / 10 // 0.1 SOL is plenty for tx fees
 ): Promise<void> {
   const balance = await conn.getBalance(pubkey);
   if (balance >= minLamports) return;
 
-  const need = Math.max(minLamports - balance, LAMPORTS_PER_SOL);
+  const need = Math.max(minLamports - balance, LAMPORTS_PER_SOL / 10);
   try {
     const sig = await conn.requestAirdrop(pubkey, need);
     await conn.confirmTransaction(sig, "confirmed");
@@ -65,7 +65,7 @@ export async function ensureFunded(
       `[keys] airdrop failed for ${pubkey.toBase58()} — fund manually with:`
     );
     console.warn(
-      `  solana airdrop 2 ${pubkey.toBase58()} -u ${conn.rpcEndpoint}`
+      `  solana transfer ${pubkey.toBase58()} 0.5 -u ${conn.rpcEndpoint} --allow-unfunded-recipient`
     );
     throw err;
   }

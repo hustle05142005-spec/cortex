@@ -33,7 +33,7 @@ import {
 
 const PER_CALL = new BN(300_000); // 0.30 devUSDC — covers the priciest demo skill
 const DAILY = new BN(2_000_000); // 2.00 devUSDC daily cap
-const TOP_UP_LAMPORTS = 1_000_000; // 1.00 devUSDC vault top-up target
+const TOP_UP_LAMPORTS = 1_500_000; // 1.50 devUSDC vault top-up target (covers 10 calls)
 
 function solscanUrl(sig: string, cluster: string): string {
   if (cluster === "mainnet-beta") return `https://solscan.io/tx/${sig}`;
@@ -178,12 +178,26 @@ async function main() {
 
 function mockResponse(slug: string): string {
   switch (slug) {
+    case "demo-price-feed":
+      return "SOL = $148.92 (Jupiter mid)";
     case "demo-weather":
       return "Aktobe, KZ — 14 °C, partly cloudy";
+    case "demo-summarize":
+      return "3 bullets summarising 12k-token research note";
     case "demo-web-search":
       return "5 hits for 'YC RFS AI-Native Service Companies'";
+    case "demo-translate":
+      return "EN → RU translation of 480-word brief";
+    case "demo-rag":
+      return "Answered against Solana docs: confirmed";
+    case "demo-onchain-audit":
+      return "0 high / 2 medium / 5 informational findings";
     case "colosseum-research":
       return "8-step research output for 'agentic stablecoin payments'";
+    case "demo-image-gen":
+      return "1024×1024 image: 'Solana sunrise above Almaty mountains'";
+    case "demo-tts":
+      return "16s WAV synth of welcome message in Russian";
     default:
       return "ok";
   }

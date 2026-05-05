@@ -15,7 +15,7 @@ cortex_program = "DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

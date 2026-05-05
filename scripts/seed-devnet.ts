@@ -19,6 +19,13 @@ import { loadOrCreateKeypair, saveConfig, ensureFunded } from "./lib/keys";
 
 const SKILLS = [
   {
+    slug: "demo-price-feed",
+    name: "Price Feed",
+    description: "Returns the latest USD price for a Solana SPL token.",
+    manifestUri: "https://example.com/skills/price-feed.json",
+    pricePerCall: 20_000, // 0.02 devUSDC
+  },
+  {
     slug: "demo-weather",
     name: "Weather",
     description: "Returns current weather for a city.",
@@ -26,11 +33,39 @@ const SKILLS = [
     pricePerCall: 50_000, // 0.05 devUSDC
   },
   {
+    slug: "demo-summarize",
+    name: "Summarize",
+    description: "Summarises a long text into 3 bullet points.",
+    manifestUri: "https://example.com/skills/summarize.json",
+    pricePerCall: 80_000, // 0.08 devUSDC
+  },
+  {
     slug: "demo-web-search",
     name: "Web Search",
     description: "Searches the web and returns top 5 results.",
     manifestUri: "https://example.com/skills/web-search.json",
-    pricePerCall: 100_000, // 0.1 devUSDC
+    pricePerCall: 100_000, // 0.10 devUSDC
+  },
+  {
+    slug: "demo-translate",
+    name: "Translate",
+    description: "Translates text between any two ISO-639 languages.",
+    manifestUri: "https://example.com/skills/translate.json",
+    pricePerCall: 120_000, // 0.12 devUSDC
+  },
+  {
+    slug: "demo-rag",
+    name: "RAG over Docs",
+    description: "Answers a question against a vector store of docs.",
+    manifestUri: "https://example.com/skills/rag.json",
+    pricePerCall: 150_000, // 0.15 devUSDC
+  },
+  {
+    slug: "demo-onchain-audit",
+    name: "On-chain Audit",
+    description: "Static-analyses a Solana program for common pitfalls.",
+    manifestUri: "https://example.com/skills/onchain-audit.json",
+    pricePerCall: 180_000, // 0.18 devUSDC
   },
   {
     slug: "colosseum-research",
@@ -38,7 +73,21 @@ const SKILLS = [
     description:
       "Runs the 8-step Colosseum research workflow on a Solana topic.",
     manifestUri: "https://arena.colosseum.org/copilot",
-    pricePerCall: 200_000, // 0.2 devUSDC
+    pricePerCall: 200_000, // 0.20 devUSDC
+  },
+  {
+    slug: "demo-image-gen",
+    name: "Image Generation",
+    description: "Generates a 1024×1024 image from a text prompt.",
+    manifestUri: "https://example.com/skills/image-gen.json",
+    pricePerCall: 250_000, // 0.25 devUSDC
+  },
+  {
+    slug: "demo-tts",
+    name: "Text-to-Speech",
+    description: "Synthesises speech audio from text in 32 languages.",
+    manifestUri: "https://example.com/skills/tts.json",
+    pricePerCall: 100_000, // 0.10 devUSDC
   },
 ];
 
