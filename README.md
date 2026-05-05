@@ -19,9 +19,11 @@ accrues directly to the author's ATA.
 ```
 programs/cortex_program/        # Anchor program (Rust)
 sdk/                            # TypeScript SDK (CortexClient + IDL re-export)
-app/                            # Next.js dashboard (App Router)
+cli/                            # `cortex publish` CLI (cortex.toml + on-chain register)
+app/                            # Next.js dashboard (App Router) incl. /authors/[pubkey]
 demo-agent/                     # Node.js demo agent — calls every paid skill once
 scripts/seed-devnet.ts          # Idempotent: creates devUSDC + registers 10 skills
+docs/MAINNET.md                 # Mainnet deploy + verification + monitoring checklist
 tests/cortex.test.ts            # 7 Anchor integration tests
 ```
 
@@ -37,13 +39,15 @@ Three account types:
 | `Skill`       | `[b"skill", slug.as_bytes()]`  | Author, mint, price-per-call, manifest URI, lifetime stats       |
 | Vault         | ATA owned by `AgentWallet` PDA | Holds the agent's USDC; PDA-signed CPI moves funds to the author |
 
-Six instructions:
+Eight instructions:
 
 - `create_agent_wallet(per_call_limit, daily_limit)`
 - `update_agent_limits(per_call_limit, daily_limit)`
-- `withdraw(amount)` — owner-only escape hatch
-- `register_skill(slug, name, description, manifest_uri, price_per_call)`
+- `withdraw(amount)` — owner-only; emits `Withdrawn`
+- `close_agent_wallet()` — owner-only; drains vault, closes both vault ATA and wallet PDA, refunds rent
+- `register_skill(slug, name, description, manifest_uri, price_per_call)` — slug must be lowercase ASCII / digits / `-` / `_`
 - `update_skill(price?, active?)`
+- `close_skill()` — author-only; closes skill PDA, refunds rent
 - `pay_for_call()` — signed by the agent runtime; checks limits, settles SPL transfer, emits `CallPaid`
 
 ### TypeScript SDK — `cortex-sdk`
@@ -77,12 +81,33 @@ serving content.
 Lower-level access is still available — `import { CortexClient } from "cortex-sdk"`
 for hand-built txs, account fetchers, and PDA helpers.
 
+### `cortex publish` CLI — `cli/`
+
+Author-side toolkit. Drop a `cortex.toml` next to your skill's HTTP
+handler and run `cortex publish` to register it on-chain.
+
+```bash
+npx ts-node cli/bin/cortex.ts publish path/to/cortex.toml
+npx ts-node cli/bin/cortex.ts inspect <slug>          # read-only state
+npx ts-node cli/bin/cortex.ts deactivate <slug>       # active = false
+npx ts-node cli/bin/cortex.ts close <slug>            # close PDA, refund rent
+```
+
+The CLI is **idempotent** — re-publishing an existing slug only writes
+the fields that drifted (price, manifest URI, active flag). When
+`verify_url` is set in `cortex.toml`, the CLI fetches that URL (e.g. a
+raw GitHub URL pointing at the canonical TOML) and warns about
+local/remote diffs before publishing — a lightweight provenance signal
+without a full GitHub OAuth flow. Real reference at
+[`app/api/skills/cortex-search/cortex.toml`](./app/api/skills/cortex-search/cortex.toml).
+
 ### Next.js dashboard — `app/`
 
-Three routes:
+Four routes:
 
 - `/` — overview, lifetime stats, "how a call settles" explainer
 - `/marketplace` — every registered skill, live counters, links to author and manifest
+- `/authors/[pubkey]` — author dashboard: total revenue, total calls, top-5 skills by revenue
 - `/agent` — **interactive wallet UI**:
   - Connect Phantom or Solflare; the connected wallet becomes the **owner key**
   - Auto-generates a fresh **agent signer keypair** (stored locally in the

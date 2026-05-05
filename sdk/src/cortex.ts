@@ -301,6 +301,28 @@ export class Cortex {
   }
 
   /**
+   * Drain the vault, close the vault token account, and close the
+   * AgentWallet PDA. Rent + remaining tokens flow back to the owner.
+   * Idempotent end-of-life for an agent.
+   */
+  async closeAgentWallet(): Promise<TransactionSignature> {
+    const owner = this.requireOwner();
+    const wallet = await this.getWalletState();
+    if (!wallet) throw new Error("Agent wallet does not exist yet.");
+    const vault = this._ownerClient!.agentVault(wallet.publicKey, wallet.mint);
+    const ownerAta = getAssociatedTokenAddressSync(
+      wallet.mint,
+      owner.publicKey
+    );
+    return this._ownerClient!.closeAgentWallet(
+      owner.publicKey,
+      wallet.publicKey,
+      vault,
+      ownerAta
+    ).rpc();
+  }
+
+  /**
    * Top up the agent vault by `amount` from the owner's ATA. This is a
    * plain SPL transfer (the program doesn't need to sign incoming
    * deposits) so we build it ourselves.
@@ -367,6 +389,12 @@ export class Cortex {
       newPrice: opts.newPrice !== undefined ? toBN(opts.newPrice) : undefined,
       active: opts.active,
     }).rpc();
+  }
+
+  /** Close a skill PDA and refund rent to the author. */
+  async closeSkill(slug: string): Promise<TransactionSignature> {
+    const author = this.requireAuthor();
+    return this._authorClient!.closeSkill(author.publicKey, slug).rpc();
   }
 
   // ---------------------------------------------------------------------

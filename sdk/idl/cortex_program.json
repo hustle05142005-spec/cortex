@@ -8,16 +8,141 @@
   },
   "instructions": [
     {
+      "name": "close_agent_wallet",
+      "docs": [
+        "Owner-only: drain the vault, close the vault token account, and",
+        "close the AgentWallet PDA. Rent and any remaining tokens flow",
+        "back to the owner. Idempotent end-of-life for an agent."
+      ],
+      "discriminator": [
+        126,
+        71,
+        219,
+        130,
+        157,
+        136,
+        98,
+        77
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "agent_wallet"
+          ]
+        },
+        {
+          "name": "agent_wallet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent_wallet.agent",
+                "account": "AgentWallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_vault",
+          "writable": true
+        },
+        {
+          "name": "owner_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_skill",
+      "docs": [
+        "Author-only: close a skill PDA and refund rent."
+      ],
+      "discriminator": [
+        80,
+        95,
+        57,
+        111,
+        17,
+        86,
+        54,
+        103
+      ],
+      "accounts": [
+        {
+          "name": "author",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "skill"
+          ]
+        },
+        {
+          "name": "skill",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "skill.slug",
+                "account": "Skill"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "create_agent_wallet",
       "docs": [
         "Create an AgentWallet PDA owned by `owner` and addressable by the",
         "given `agent` pubkey. Also creates the wallet's ATA for `mint`."
       ],
-      "discriminator": [243, 173, 1, 184, 209, 14, 51, 108],
+      "discriminator": [
+        243,
+        173,
+        1,
+        184,
+        209,
+        14,
+        51,
+        108
+      ],
       "accounts": [
         {
           "name": "owner",
-          "docs": ["Human owner / payer."],
+          "docs": [
+            "Human owner / payer."
+          ],
           "writable": true,
           "signer": true
         },
@@ -34,7 +159,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [97, 103, 101, 110, 116]
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -55,9 +186,38 @@
               {
                 "kind": "const",
                 "value": [
-                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
-                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
-                  245, 133, 126, 255, 0, 169
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
                 ]
               },
               {
@@ -68,9 +228,38 @@
             "program": {
               "kind": "const",
               "value": [
-                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
-                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
-                219, 233, 248, 89
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
               ]
             }
           }
@@ -110,7 +299,16 @@
         "`skill.price_per_call` from the agent's vault to the author's ATA",
         "and updates per-day accounting."
       ],
-      "discriminator": [96, 109, 107, 40, 242, 120, 106, 218],
+      "discriminator": [
+        96,
+        109,
+        107,
+        40,
+        242,
+        120,
+        106,
+        218
+      ],
       "accounts": [
         {
           "name": "agent",
@@ -127,7 +325,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [97, 103, 101, 110, 116]
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -147,7 +351,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [115, 107, 105, 108, 108]
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
               },
               {
                 "kind": "account",
@@ -174,7 +384,16 @@
         "Register a paid skill. PDA seeded by `slug` so slugs are unique",
         "globally."
       ],
-      "discriminator": [166, 249, 255, 189, 192, 197, 102, 2],
+      "discriminator": [
+        166,
+        249,
+        255,
+        189,
+        192,
+        197,
+        102,
+        2
+      ],
       "accounts": [
         {
           "name": "author",
@@ -191,7 +410,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [115, 107, 105, 108, 108]
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
               },
               {
                 "kind": "arg",
@@ -230,13 +455,26 @@
     },
     {
       "name": "update_agent_limits",
-      "docs": ["Owner-only: change the spending policy on an existing wallet."],
-      "discriminator": [222, 214, 32, 3, 150, 59, 89, 45],
+      "docs": [
+        "Owner-only: change the spending policy on an existing wallet."
+      ],
+      "discriminator": [
+        222,
+        214,
+        32,
+        3,
+        150,
+        59,
+        89,
+        45
+      ],
       "accounts": [
         {
           "name": "owner",
           "signer": true,
-          "relations": ["agent_wallet"]
+          "relations": [
+            "agent_wallet"
+          ]
         },
         {
           "name": "agent_wallet",
@@ -245,7 +483,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [97, 103, 101, 110, 116]
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -269,13 +513,26 @@
     },
     {
       "name": "update_skill",
-      "docs": ["Author-only: change price or active flag."],
-      "discriminator": [116, 142, 164, 86, 9, 27, 112, 227],
+      "docs": [
+        "Author-only: change price or active flag."
+      ],
+      "discriminator": [
+        116,
+        142,
+        164,
+        86,
+        9,
+        27,
+        112,
+        227
+      ],
       "accounts": [
         {
           "name": "author",
           "signer": true,
-          "relations": ["skill"]
+          "relations": [
+            "skill"
+          ]
         },
         {
           "name": "skill",
@@ -284,7 +541,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [115, 107, 105, 108, 108]
+                "value": [
+                  115,
+                  107,
+                  105,
+                  108,
+                  108
+                ]
               },
               {
                 "kind": "account",
@@ -317,12 +580,23 @@
         "owner's ATA. Skipping deposit ix because that's just an SPL",
         "transfer into the PDA's vault — no signature needed."
       ],
-      "discriminator": [183, 18, 70, 156, 148, 109, 161, 34],
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
       "accounts": [
         {
           "name": "owner",
           "signer": true,
-          "relations": ["agent_wallet"]
+          "relations": [
+            "agent_wallet"
+          ]
         },
         {
           "name": "agent_wallet",
@@ -331,7 +605,13 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [97, 103, 101, 110, 116]
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -365,33 +645,135 @@
   "accounts": [
     {
       "name": "AgentWallet",
-      "discriminator": [127, 35, 180, 143, 201, 1, 100, 50]
+      "discriminator": [
+        127,
+        35,
+        180,
+        143,
+        201,
+        1,
+        100,
+        50
+      ]
     },
     {
       "name": "Skill",
-      "discriminator": [53, 13, 242, 204, 77, 249, 1, 215]
+      "discriminator": [
+        53,
+        13,
+        242,
+        204,
+        77,
+        249,
+        1,
+        215
+      ]
     }
   ],
   "events": [
     {
       "name": "AgentLimitsUpdated",
-      "discriminator": [74, 63, 86, 154, 66, 206, 154, 113]
+      "discriminator": [
+        74,
+        63,
+        86,
+        154,
+        66,
+        206,
+        154,
+        113
+      ]
+    },
+    {
+      "name": "AgentWalletClosed",
+      "discriminator": [
+        78,
+        32,
+        124,
+        17,
+        39,
+        53,
+        205,
+        63
+      ]
     },
     {
       "name": "AgentWalletCreated",
-      "discriminator": [3, 111, 163, 233, 246, 175, 232, 231]
+      "discriminator": [
+        3,
+        111,
+        163,
+        233,
+        246,
+        175,
+        232,
+        231
+      ]
     },
     {
       "name": "SkillCalled",
-      "discriminator": [87, 58, 159, 193, 164, 48, 10, 88]
+      "discriminator": [
+        87,
+        58,
+        159,
+        193,
+        164,
+        48,
+        10,
+        88
+      ]
+    },
+    {
+      "name": "SkillClosed",
+      "discriminator": [
+        35,
+        11,
+        101,
+        83,
+        186,
+        207,
+        171,
+        82
+      ]
     },
     {
       "name": "SkillRegistered",
-      "discriminator": [222, 131, 204, 34, 182, 68, 239, 64]
+      "discriminator": [
+        222,
+        131,
+        204,
+        34,
+        182,
+        68,
+        239,
+        64
+      ]
     },
     {
       "name": "SkillUpdated",
-      "discriminator": [168, 10, 44, 211, 219, 5, 98, 98]
+      "discriminator": [
+        168,
+        10,
+        44,
+        211,
+        219,
+        5,
+        98,
+        98
+      ]
+    },
+    {
+      "name": "Withdrawn",
+      "discriminator": [
+        20,
+        89,
+        223,
+        198,
+        194,
+        124,
+        219,
+        13
+      ]
     }
   ],
   "errors": [
@@ -526,6 +908,26 @@
       }
     },
     {
+      "name": "AgentWalletClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "drained",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "AgentWalletCreated",
       "type": {
         "kind": "struct",
@@ -642,6 +1044,26 @@
       }
     },
     {
+      "name": "SkillClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "skill",
+            "type": "pubkey"
+          },
+          {
+            "name": "author",
+            "type": "pubkey"
+          },
+          {
+            "name": "slug",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
       "name": "SkillRegistered",
       "type": {
         "kind": "struct",
@@ -681,6 +1103,30 @@
           {
             "name": "active",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Withdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
           }
         ]
       }
