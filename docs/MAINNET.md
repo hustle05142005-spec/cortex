@@ -5,8 +5,7 @@ Cortex's `cortex_program` is currently deployed on **devnet** at
 gate the program needs to pass before we move the canonical deployment
 to mainnet-beta.
 
-The point isn't to be exhaustive — it's to make every assumption
-checkable from a fresh checkout.
+Every box below should be checkable from a fresh checkout.
 
 ## 0. Pre-flight
 
