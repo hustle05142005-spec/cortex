@@ -20,14 +20,14 @@ accrues directly to the author's ATA.
 programs/cortex_program/        # Anchor program (Rust)
 sdk/                            # TypeScript SDK (CortexClient + IDL re-export)
 app/                            # Next.js dashboard (App Router)
-demo-agent/                     # Node.js demo agent — calls 3 paid skills
-scripts/seed-devnet.ts          # Idempotent: creates devUSDC + registers skills
+demo-agent/                     # Node.js demo agent — calls every paid skill once
+scripts/seed-devnet.ts          # Idempotent: creates devUSDC + registers 10 skills
 tests/cortex.test.ts            # 7 Anchor integration tests
 ```
 
 ### Anchor program — `cortex_program`
 
-Program ID: `DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV`
+Program ID: [`DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV`](https://solscan.io/account/DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV?cluster=devnet) (live on **devnet**)
 
 Three account types:
 
@@ -75,8 +75,9 @@ A Node.js script that:
 
 1. Creates an `AgentWallet` PDA if missing.
 2. Tops up the vault from the owner's ATA.
-3. Calls each registered demo skill once (`weather`, `web-search`,
-   `colosseum-research`).
+3. Calls each registered demo skill once (10 skills covering search,
+   summarisation, translation, RAG, on-chain audit, image generation, TTS,
+   weather, price feeds, and Colosseum research).
 4. Prints solscan links for every settlement and a final summary.
 
 ---
@@ -117,13 +118,18 @@ npm run demo:agent           # creates wallet, tops up vault, calls every skill
 ### Run the dashboard
 
 ```bash
-# Optional: point the dashboard at the demo agent
-echo "NEXT_PUBLIC_DEMO_AGENT_PUBKEY=$(solana-keygen pubkey config/demo-agent.json)" \
-  >> .env.local
-
-npm run dev
-# open http://localhost:3000
+cp .env.example .env.local            # devnet defaults are committed
+npm run dev                            # http://localhost:3000
 ```
+
+### Deploy the dashboard to Vercel (1-click)
+
+1. Go to [vercel.com/new](https://vercel.com/new), import this GitHub repo.
+2. Vercel auto-detects Next.js — leave the default build command.
+3. In **Environment Variables**, paste the four `NEXT_PUBLIC_*` keys from
+   [`.env.example`](./.env.example) (devnet defaults).
+4. Click **Deploy**. The dashboard reads on-chain state from devnet on
+   every request — no backend required.
 
 ---
 

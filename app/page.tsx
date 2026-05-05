@@ -277,17 +277,19 @@ function HeroVaultMock({ stats }: { stats: GlobalStats }) {
 
           <ul className="space-y-2 font-mono text-[11px] text-zinc-400">
             {[
-              ["demo-weather", "0.05 USDC", "settled"],
-              ["demo-web-search", "0.10 USDC", "settled"],
-              ["colosseum-research", "0.20 USDC", "settled"],
-            ].map(([slug, amount, status]) => (
+              ["demo-price-feed", "0.02 USDC"],
+              ["demo-summarize", "0.08 USDC"],
+              ["demo-translate", "0.12 USDC"],
+              ["demo-onchain-audit", "0.18 USDC"],
+              ["demo-image-gen", "0.25 USDC"],
+            ].map(([slug, amount]) => (
               <li
                 key={slug}
                 className="flex items-center justify-between rounded-xl border border-white/5 bg-black/20 px-3 py-2"
               >
                 <span className="text-zinc-300">{slug}</span>
                 <span className="text-zinc-500">{amount}</span>
-                <span className="text-emerald-300/80">{status}</span>
+                <span className="text-emerald-300/80">settled</span>
               </li>
             ))}
           </ul>

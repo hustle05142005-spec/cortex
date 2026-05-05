@@ -1,6 +1,8 @@
 import { Nav, PageBackdrop } from "../components/Nav";
 import { SkillCard, SkillCardData } from "../components/SkillCard";
+import { TemplateCard } from "../components/TemplateCard";
 import { createReadOnlyCortexClient } from "../lib/cortex";
+import { FEATURED_TEMPLATES } from "../lib/featured";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +58,12 @@ export default async function MarketplacePage() {
         </header>
 
         <section className="mt-16">
+          <div className="mb-6 flex items-baseline justify-between">
+            <h2 className="eyebrow">Live on-chain</h2>
+            <span className="font-mono text-[11px] tracking-wider text-zinc-500">
+              {skills.length} skill{skills.length === 1 ? "" : "s"}
+            </span>
+          </div>
           {skills.length === 0 ? (
             <EmptyState />
           ) : (
@@ -65,6 +73,27 @@ export default async function MarketplacePage() {
               ))}
             </div>
           )}
+        </section>
+
+        <section className="mt-24">
+          <div className="mb-6 max-w-3xl space-y-3">
+            <h2 className="eyebrow">Featured templates</h2>
+            <p className="font-display text-2xl leading-snug font-medium tracking-tight text-white sm:text-3xl">
+              Open-source agent skills, ready to claim
+            </p>
+            <p className="text-sm leading-relaxed text-zinc-400">
+              Maintainers add a <code className="font-mono text-zinc-200">cortex.toml</code> with
+              a Solana pubkey, run <code className="font-mono text-zinc-200">cortex publish</code>,
+              and start earning per-call USDC. Until then, these cards are just
+              recruiting surfaces — Cortex never collects royalties on
+              unclaimed code.
+            </p>
+          </div>
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {FEATURED_TEMPLATES.map((t) => (
+              <TemplateCard key={t.slug} template={t} />
+            ))}
+          </div>
         </section>
       </main>
     </div>

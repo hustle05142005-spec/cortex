@@ -1,0 +1,73 @@
+{
+  "cluster": "devnet",
+  "rpcUrl": "https://api.devnet.solana.com",
+  "programId": "DBUXLUHZk8UEGJgdbAAaazTuLoCKbReDF1tNPa5fMprV",
+  "mint": "9QtDZ1ojHg8UtUtcxjzZ2Xb24Z8vRJ3vEiVgBSAskpn5",
+  "ownerPubkey": "4MuUAWovAVGokZuAcCLnqNoKVzneYfSJnmec6UVvsb2e",
+  "agentPubkey": "2deDn2z1Mi6GUWPMe3248Ak36ubGPiqSmEcY9yBTdNVB",
+  "authors": {
+    "default": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+  },
+  "skills": [
+    {
+      "slug": "demo-price-feed",
+      "pda": "8uRsErnQyVe88dPdKEuC3pzbC1PQjmgkG3kp6GxV2PWt",
+      "pricePerCall": 20000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-weather",
+      "pda": "6QMCRaZ2g2UzUh7pCbPLRsGNXt8CtX5GDCM8YfjPLC1h",
+      "pricePerCall": 50000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-summarize",
+      "pda": "A3fpe45KTeCFcS5n6SmZRUQtJErTcBUvAERrCzmEhH16",
+      "pricePerCall": 80000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-web-search",
+      "pda": "GGFseaTwVxkat7ZVgUirArsSVivPYVbMxmfYTvuPVoBP",
+      "pricePerCall": 100000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-translate",
+      "pda": "969vDLzK5gFF4cuxxdFkpBFeStevnhoRy94kLj5gWXom",
+      "pricePerCall": 120000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-rag",
+      "pda": "9xMMwyFs2Aq7LsA2ia9uCCT1NRg6a6s4wn1UCuCNostp",
+      "pricePerCall": 150000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-onchain-audit",
+      "pda": "6b4vh9Y8SSuca2D2DKphrpVL79z53Rsa4H9ZqJ7cdCMX",
+      "pricePerCall": 180000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "colosseum-research",
+      "pda": "484mzzZZgk3HA2K9io9Q7osBqgXnZ53NSRrUZWuk2uUQ",
+      "pricePerCall": 200000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-image-gen",
+      "pda": "31vHYFgNMEBCP4QtFtxG1uE82Zc3cBaxxaDn6jraRo5J",
+      "pricePerCall": 250000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    },
+    {
+      "slug": "demo-tts",
+      "pda": "Dti3orM8y63n7UdfkNppEpapuCc3yZnEvGHPLUmvLAcU",
+      "pricePerCall": 100000,
+      "author": "9e7Gbzvb8Ctcw5vnPoh9Yfi8FFYLvEPmC3x4nu2BVoH2"
+    }
+  ]
+}
